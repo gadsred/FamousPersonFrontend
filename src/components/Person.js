@@ -81,7 +81,7 @@ export default class Person extends Component{
         });
     };
 
-    bookList = () =>{
+    personList = () =>{
         return this.props.history.push("/list");
     };
 
@@ -149,7 +149,7 @@ export default class Person extends Component{
                         <Button size="sm" variant="info" type="reset">
                                 <FontAwesomeIcon icon={faUndo} /> Reset
                         </Button>{' '}
-                        <Button size="sm" variant="info" type="reset" onClick={this.bookList.bind()}>
+                        <Button size="sm" variant="info" type="reset" onClick={this.personList.bind()}>
                                 <FontAwesomeIcon icon={faList} /> Person List
                         </Button>
                         </Card.Footer>

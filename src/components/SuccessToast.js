@@ -1,5 +1,5 @@
 import React,{Component} from 'react';
-import { Toast,ToastBody, ToastHeader } from 'react-bootstrap';
+import { Toast } from 'react-bootstrap';
 
 export default class SuccessToast extends Component{
     render(){

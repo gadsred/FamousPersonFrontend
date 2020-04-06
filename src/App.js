@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 import NavigationBar from './components/NavigationBar';
@@ -9,8 +8,8 @@ import { BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
 import Welcome from './components/Welcome';
 import Footer from './components/Footer';
-import Person from './components/Person';
-import PersonList from './components/PersonList';
+import Person from './components/Person2';
+import PersonList from './components/PersonList2';
 
 export default function App() {
 
@@ -21,6 +20,7 @@ export default function App() {
   const heading = "Welcome to Famous Persons";
   const desc = "well-known. A well-known person or thing is known about by a lot of people and is therefore famous or familiar. If someone is well-known for a particular activity, a lot of people know about them because of their involvement with that activity.";
   const footer = "Gadsred";
+
   return (
     <Router>
       <NavigationBar />

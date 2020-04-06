@@ -31,6 +31,15 @@ export default class PersonList extends Component{
             });
     };
 
+    searchPerson = (name) => {
+        const url = (name) ? "http://localhost:8080/api/v1/person/search/"+name : "http://localhost:8080/api/v1/person"
+        axios.get(url)
+            .then(response => response.data)
+            .then((data) => {
+                this.setState({persons:data});        
+            });
+    };
+
     deletePerson = (personId) =>{
         axios.delete("http://localhost:8080/api/v1/person/"+personId)
             .then( response =>{
@@ -98,6 +107,14 @@ export default class PersonList extends Component{
         this.setState({sortType:'desc'});
      };
 
+     
+    kwordChange = event =>{
+        this.setState({
+            [event.target.name]:event.target.value
+        });
+    };
+
+    
 
     render(){
 
@@ -130,12 +147,16 @@ export default class PersonList extends Component{
                     <Card.Body>
                     <InputGroup className="mb-3">
                         <FormControl
-                        placeholder="Search First and Last Name"
-                        aria-label="Search First and Last Name"
-                        aria-describedby="basic-addon2"
+                            type="text"
+                            value={this.state.kword}
+                            onChange={this.kwordChange}
+                            name="kword"
+                            placeholder="Search First and Last Name"
+                            aria-label="Search First and Last Name"
+                            aria-describedby="basic-addon2"
                         />
                         <InputGroup.Append>
-                        <Button className={"text-white"} variant="outline-secondary">Search</Button>
+                        <Button onClick={this.searchPerson.bind(this, this.state.kword)} className={"text-white"} variant="outline-secondary">Search</Button>
                         </InputGroup.Append>
                     </InputGroup>
                         Sorting(Last Name, First Name):{' '} 
