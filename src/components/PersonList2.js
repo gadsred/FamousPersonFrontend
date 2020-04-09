@@ -46,7 +46,7 @@ export default function PersonList () {
 
             setData(Object.values(data).sort((a, b)=>{
                 const reversed = (s === "asc") ? 1 : -1;
-                return reversed * (a.lastName+b.firstName).localeCompare(b.lastName+b.firstName);
+                return reversed * (a.lastName+a.firstName).localeCompare(b.lastName+b.firstName);
             }));
                 
         } catch (error) {
