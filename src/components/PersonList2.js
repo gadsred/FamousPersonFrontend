@@ -21,8 +21,12 @@ export default function PersonList () {
                 axios.delete("http://localhost:8080/api/v1/person/"+info)
                 .then((response) => {
                     setShow(true);
-                    setTimeout(() => setShow(false),3000);
                     axios.get("http://localhost:8080/api/v1/person").then((response) => {setData(response.data); });
+                    const timer = setTimeout(() => {
+                        setShow(false);
+                        clearTimeout(timer);
+                    }, 1000);
+                    
                 });
                 break;
             case 'get':
@@ -42,7 +46,7 @@ export default function PersonList () {
 
             setData(Object.values(data).sort((a, b)=>{
                 const reversed = (s === "asc") ? 1 : -1;
-                return reversed * a.lastName.localeCompare(b.lastName || b.firstName);
+                return reversed * (a.lastName+b.firstName).localeCompare(b.lastName+b.firstName);
             }));
                 
         } catch (error) {
@@ -56,7 +60,6 @@ export default function PersonList () {
                 axios.get("http://localhost:8080/api/v1/person")
                 .then((response) => {
                     setData(response.data); 
-                    console.log(response); 
                 });  
         } catch (error) {
             console.log(error);
@@ -69,9 +72,11 @@ export default function PersonList () {
 
   return (
         <div>
+            {show ? 
             <div style={{ "display": show ? "block" : "none" }}>
                 <SuccessToast show = {show} message = {"Person was Deleted Successfully."} type = {"danger" } />
-            </div>
+            </div>:''
+            }
             <Card className={"border border-dark bg-dark text-white"}>
                 <Card.Header><FontAwesomeIcon icon={faList} /> Person List</Card.Header>
                 <Card.Body>

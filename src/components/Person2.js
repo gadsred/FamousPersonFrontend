@@ -7,21 +7,23 @@ import SuccessToast from './SuccessToast';
 
 
 const initialState = {
-    username: "",
-    email: "",
-    password: "",
-    passwordConfirmation: ""
+    id:'', 
+    firstName:'',
+    lastName:'', 
+    dob:'', 
+    bio:'', 
+    photoUrl:''
+    
   };
+
+  
 
 export default function Person(props){
 
     const [show, setShow] = useState(false);    
     const personId = +props.match.params.id;
 
-    const [
-        { id, firstName,lastName, dob, bio, photoUrl},
-        setState
-      ] = useState(initialState);
+    const [{ id, firstName,lastName, dob, bio, photoUrl},setState] = useState(initialState);
 
       const clearState = () => {
         setState({ ...initialState });
@@ -45,14 +47,20 @@ export default function Person(props){
         axios.post("http://localhost:8080/api/v1/person",person)
         .then((response) => {
             setShow(true);
-            setTimeout(() => setShow(false),3000);
-            clearState();
+            const timer = setTimeout(() => {
+                setShow(false);
+                clearTimeout(timer);
+                clearState();
+            }, 3000);
+            document.getElementById("personFormId").reset();
+            
+            
         });
     }
 
-   
-
     useEffect(() => {
+
+       
         try {
             
             if(personId > 0)
@@ -60,6 +68,7 @@ export default function Person(props){
                 axios.get("http://localhost:8080/api/v1/person/"+personId)
                 .then((response) => {
                     if(response.data !=null){ 
+                       
                     }  
                 });   
             }
@@ -71,9 +80,11 @@ export default function Person(props){
  
         return(
             <div>
+                {show ? 
                 <div style={{"display": show ? "block" : "none"}}>
                     <SuccessToast show ={show} message={personId > 1 ? "Person Updated Successfully." : "Person Saved Successfully."} type={"success"}/>
-                </div>
+                </div>:''
+            }
                 <Card className={"border border-dark bg-dark text-white"}>
                     <Card.Header><FontAwesomeIcon icon={id ? faEdit : faPlusSquare} /> {id ? "Update Person" : "Add New Person"}</Card.Header>
                     <Form id="personFormId" onSubmit={(e) =>{handleSubmit();e.preventDefault();}}>
@@ -127,7 +138,7 @@ export default function Person(props){
                             <Button size="sm" variant="success" type="submit">
                                 <FontAwesomeIcon icon={faSave} /> {id ? "Update" : "Save"} 
                         </Button>{' '}
-                        <Button size="sm" variant="info" type="reset" onClick={(e) =>{clearState(); e.preventDefault();}}>
+                        <Button size="sm" variant="info" type="reset" onClick={(e) =>{clearState();}}>
                                 <FontAwesomeIcon icon={faUndo} /> Reset
                         </Button>{' '}
                         <Button onClick={()=>{props.history.push("/list")}} size="sm" variant="info" type="reset">
