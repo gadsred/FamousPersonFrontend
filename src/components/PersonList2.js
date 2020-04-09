@@ -10,49 +10,61 @@ import SuccessToast from './SuccessToast';
 
 export default function PersonList () {
   const [data, setData] = useState({ persons: [] });
-  const [res, setRes] = useState('');
+  const [show, setShow] = useState(false);
   const [kword, setKword] = useState('');
-  const [show, setShow] = useState('');
-  const [method, setMethod] = useState('get');
-  const defaultUrl="http://localhost:8080/api/v1/person";
-  const [url, setUrl] = useState(defaultUrl);
-  const [sort, setSort] = useState('asc');
-  
-    useEffect(() => {
-        try {
-                if(method == 'delete')
-                {
-                    axios.delete(url)
-                    .then((response) => {
-                        setShow(true);
-                        setUrl(defaultUrl);
-                        setMethod('get');
-                        setTimeout(() => setShow(false),3000);
-                    });
-                }
-                let cUrl = (kword === '') ? defaultUrl : url;
-                axios.get(cUrl)
+ 
+    function handleClick(info,method)
+    {
+        switch(method)
+        {
+            case 'delete':
+                axios.delete("http://localhost:8080/api/v1/person/"+info)
                 .then((response) => {
-                    setData(response.data);
-                    setRes(response);      
-                });  
-        } catch (error) {
-            console.log(error);
+                    setShow(true);
+                    setTimeout(() => setShow(false),3000);
+                    axios.get("http://localhost:8080/api/v1/person").then((response) => {setData(response.data); });
+                });
+                break;
+            case 'get':
+                let url = kword ==="" ? "http://localhost:8080/api/v1/person":"http://localhost:8080/api/v1/person/search/"+info;
+                axios.get(url)
+                .then((response) => {
+                    setData(response.data);  
+                });
+                break;
+            default:break;
         }
-    }, [url]);
+        
+    }
 
-    useEffect(() => {
+    function sort(s){
         try {
 
-             data = data.sort((a, b)=>{
-                const reversed = (sort === "asc") ? 1 : -1;
+            setData(Object.values(data).sort((a, b)=>{
+                const reversed = (s === "asc") ? 1 : -1;
                 return reversed * a.lastName.localeCompare(b.lastName || b.firstName);
-            });
+            }));
                 
         } catch (error) {
             console.log(error);
         }
-    }, [sort]);
+    }
+
+
+    useEffect(() => {
+        try {
+                axios.get("http://localhost:8080/api/v1/person")
+                .then((response) => {
+                    setData(response.data); 
+                    console.log(response); 
+                });  
+        } catch (error) {
+            console.log(error);
+        }
+    },[]);
+
+    
+    
 
 
   return (
@@ -67,20 +79,20 @@ export default function PersonList () {
                     <FormControl
                         type="text"
                         value={kword}
-                        onChange={event => setKword(event.target.value)}
+                        onChange={(e) =>{setKword(e.target.value)}}
                         name="kword"
                         placeholder="Search First and Last Name"
                         aria-label="Search First and Last Name"
                         aria-describedby="basic-addon2"
                     />
                     <InputGroup.Append>
-                    <Button onClick={() =>{setUrl(`http://localhost:8080/api/v1/person/search/${kword}`);setMethod("get");}} className={"text-white"} variant="outline-secondary">Search</Button>
+                   <Button onClick={() =>{handleClick(kword,'get')}} className={"text-white"} variant="outline-secondary">Search</Button>
                     </InputGroup.Append>
                 </InputGroup>
                     Sorting(Last Name, First Name):{' '} 
                      <ButtonGroup>
-                        <Button size="sm" variant="outline-primary" onClick={() =>{setSort('asc')}}><FontAwesomeIcon icon={faArrowUp} /></Button>
-                        <Button size="sm" variant="outline-primary" onClick={() =>{setSort('desc')}}><FontAwesomeIcon icon={faArrowDown} /></Button>
+                        <Button size="sm" variant="outline-primary" onClick={() =>{sort('asc')}}><FontAwesomeIcon icon={faArrowUp} /></Button>
+                        <Button size="sm" variant="outline-primary" onClick={() =>{sort('desc')}}><FontAwesomeIcon icon={faArrowDown} /></Button>
                     </ButtonGroup>
                     <Table striped bordered hover variant="dark" responsive>
                         <thead>
@@ -96,12 +108,12 @@ export default function PersonList () {
                         </thead>
                         <tbody>
                             {
-                                res.length === 0 ?
+                                Object.values(data).length === 0 ?
                                     <tr align="center">
                                         <td colSpan="6">No Persons Available</td>
                                     </tr> :
-                                    data.map((person) => (
-                                        <tr key={person.id} align="center">
+                                    Object.values(data).map((person,i) => (
+                                        <tr key={i} align="center">
                                             <td>
                                                 <Image src={person.photoUrl}  width="100" height="115" rounded />
                                             </td>
@@ -113,7 +125,7 @@ export default function PersonList () {
                                             <td>
                                                 <ButtonGroup>
                                                     <Link to={"edit/"+person.id} className="btn btn-sm btn-outline-primary"><FontAwesomeIcon icon={faEdit} /></Link>{' '}
-                                                    <Button size="sm" variant="outline-danger" onClick={() =>{setUrl(`http://localhost:8080/api/v1/person/${person.id}`);setMethod("delete");}}><FontAwesomeIcon icon={faTrash} /></Button>
+                                                    <Button size="sm" variant="outline-danger" onClick={() =>{handleClick(person.id,'delete')}}><FontAwesomeIcon icon={faTrash} /></Button>
                                                 </ButtonGroup>
 
                                             </td>
